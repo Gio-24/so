@@ -7,7 +7,6 @@
 #include <time.h>
 #include <string.h>
 
-#include "semafori.h"
 
 #define MUTEX 0
 #define WRITE 1
@@ -24,10 +23,10 @@ int main()
 
     // creazione memoria condivisa
     int size = sizeof(int) + (N + 1) * sizeof(char); // contatore + stringa di N + 1 caratteri
-    int shm_id = shmget(shm_key, size, IPC_CREAT | 0644)
+    int shm_id = shmget(shm_key, size, IPC_CREAT | 0644);
     if(shm_id == -1) // controlla se la memoria è stata allocata con successo
     {
-        perror(Errore creazione memoria condivisa);
+        perror("Errore creazione memoria condivisa");
         exit(1);
     }
 
@@ -45,10 +44,10 @@ int main()
 
     // dichiarazione ed inizializzazione stringa
     char *shared_str = (char *)(reader_count + 1);
-    shared_str[0] = "\0"; // stringa vuota
+    shared_str[0] = '\0'; // stringa vuota
 
     // creazione semafori
-    int sem_id = semget(sem_key, 2, IPC_CREAT | 0644)
+    int sem_id = semget(sem_key, 2, IPC_CREAT | 0644);
     if(sem_id == -1)
     {
         perror("Errore creazione semafori");
@@ -77,38 +76,32 @@ int main()
     // processi figli
     pid_t pid;
 
-    if ((pid = fork()) == 0) 
+    if((pid = fork()) == 0) 
     {
         execl("./generatore", "generatore", shm_key_str, sem_key_str, n_str, NULL);
         perror("Exec generatore fallita");
         exit(1);
     }
 
-    if ((pid = fork()) == 0) 
+    if((pid = fork()) == 0) 
     {
         execl("./elaboratore", "elaboratore", shm_key_str, sem_key_str, n_str, NULL);
         perror("Exec elaboratore fallita");
         exit(1);
     }
 
-    if ((pid = fork()) == 0) 
+    if((pid = fork()) == 0) 
     {
         execl("./analizzatore", "analizzatore", shm_key_str, sem_key_str, n_str, "1", NULL);
         perror("Exec analizzatore1 fallita");
         exit(1);
     }
 
-    if ((pid = fork()) == 0) 
+    if((pid = fork()) == 0) 
     {
         execl("./analizzatore", "analizzatore", shm_key_str, sem_key_str, n_str, "2", NULL);
         perror("Exec analizzatore2 fallita");
         exit(1);
-    }
-
-    // attesa processi
-    for (int i = 0; i < 4; i++)
-    {
-        wait(NULL);
     }
 
     // rimozione risorse
@@ -116,6 +109,6 @@ int main()
     shmctl(shm_id, IPC_RMID, NULL);
     semctl(sem_id, 0, IPC_RMID);
 
-    printf("Tutte le risorse liberate\n");
+    printf("[MAIN] Tutte le risorse liberate\n");
     return 0;
 }

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     int shm_id = shmget(shm_key, 0, 0664);
     char *shm_ptr = shmat(shm_id, NULL, 0);
     int *reader_count = (int *)shm_ptr;
-    char *shared_string = (char *)(reader_count + 1);
+    char *shared_str = (char *)(reader_count + 1);
 
     int sem_id = semget(sem_key, 2, 0664);
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         // legge
         char buffer[100];
-        snprintf(buffer, sizeof(buffer), "%s", shared_string);
+        snprintf(buffer, sizeof(buffer), "%s", shared_str);
 
         int len = strlen(buffer);
         for (int j = 0; j < len / 2; j++) 

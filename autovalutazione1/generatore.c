@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
         {
             shared_str[j] = 'a' + (rand() % 26);
         }
-            
+        
         shared_str[N] = '\0';
 
-        printf("[Generatore] Nuova stringa: %s\n", shared_string);
+        printf("[Generatore] Nuova stringa: %s\n", shared_str);
 
         signal_sem(sem_id, WRITE);
     }

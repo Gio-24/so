@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <errno.h>
 
 #include "semafori.h"
 
@@ -10,9 +9,9 @@ int wait_sem(int id_sem, int numsem)
 
     sem_buf.sem_num = numsem;
     sem_buf.sem_flg = 0;
-    sem_buf.sem.op = -1;
+    sem_buf.sem_op = -1;
 
-    err = semop(id_sem, &sem_buf, 1) // semaforo rosso
+    err = semop(id_sem, &sem_buf, 1); // semaforo rosso
 
     if(err < 0)
     {
